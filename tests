@@ -1,0 +1,48 @@
+import unittest
+from main import two_sum 
+
+class TestTwoSum(unittest.TestCase):
+    def test_1(self):
+        self.assertEqual(two_sum([3, 2], 5), [0, 1])
+
+    def test_2(self):
+        self.assertEqual(two_sum([3, 3], 6), [0, 1])
+
+    def test_3(self):
+        self.assertEqual(two_sum([-2, -3, -4, -5], -7), [0, 3])
+        self.assertEqual(two_sum([-1, 2, 5, -3], 1), [0, 1])  
+
+    def test_4(self):
+        self.assertEqual(two_sum([0, 4, 3, 0], 0), [0, 3])
+
+    def test_5(self):
+        self.assertIsNone(two_sum([1, 2, 3], 10))
+        self.assertIsNone(two_sum([], 0))
+    def test_6(self):
+        self.assertIsNone(two_sum([], 5))
+
+    def test_7(self):
+        self.assertIsNone(two_sum([5], 5))
+
+    def test_8(self):
+        with self.assertRaises(TypeError):
+            two_sum([2, 'a', 4, 5], 7)
+
+    def test_9(self):
+        with self.assertRaises(TypeError):
+            two_sum([21.4, 7, 45, 3], 29)
+
+    def test_10(self):
+        with self.assertRaises(TypeError):
+            two_sum([2, 3, 4], '10')
+
+    def test_11(self):
+        with self.assertRaises(TypeError):
+            two_sum([2, 3, 4], 10.0)
+
+    def test_12(self):
+        with self.assertRaises(TypeError):
+            two_sum([2, 3, 4], 5.5)
+
+if __name__ == '__main__':
+    unittest.main()  
