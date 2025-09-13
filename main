@@ -1,0 +1,14 @@
+nums=[3,2]
+target=5
+def two_sum(nums, target):
+    for i in range(len(nums)):
+        for j in range(i+1,len(nums)):
+            if nums[i]==str(nums[i]) or nums[j]==str(nums[j]) or target==str(target):
+                return 'неверный тип данных'
+            if nums[i]!=int(nums[i]) or nums[j]!=int(nums[j]) or target!=int(target):
+                return 'неверный тип данных'
+            if nums[i]+nums[j]==target:
+                res=[i,j]
+                return res
+        return 'нет решений'
+print(two_sum(nums,target))
