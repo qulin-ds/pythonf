@@ -1,0 +1,24 @@
+import unittest
+from lab_3 import left_leaf, right_leaf, gen_bin_tree
+
+
+class MyTestCase(unittest.TestCase):
+    def test_left_leaf(self):
+        self.assertEqual(left_leaf(10), 21)
+        self.assertEqual(left_leaf(5), 11)
+
+    def test_right_leaf(self):
+        self.assertEqual(right_leaf(10), 19)
+        self.assertEqual(right_leaf(5), 9)
+
+    def test_gen_bin_tree_height0(self):
+        self.assertEqual(gen_bin_tree(0, 10), 10)
+
+    def test_gen_bin_tree_height1(self):
+        self.assertEqual(gen_bin_tree(1, 10), [10, 21, 19])
+
+    def test_gen_bin_tree_height2(self):
+        self.assertEqual(gen_bin_tree(2, 9),[9, [19, 39, 37], [17, 35, 33]] )
+
+if __name__ == '__main__':
+    unittest.main()
