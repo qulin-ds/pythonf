@@ -1,0 +1,16 @@
+from lab_2 import guess_num
+import unittest
+
+
+class NumTestCase(unittest.TestCase):
+
+    def test_found_number(self):
+        self.assertEqual(guess_num(5, [1, 3, 5, 7, 9]), (5, 1))
+        self.assertEqual(guess_num(42, [42]), (42, 1))
+
+    def test_not_found_number(self):
+        self.assertEqual(guess_num(4, [1, 3, 5, 7, 9]), (None, 3))
+        self.assertEqual(guess_num(10, []), (None, 0))
+
+if __name__ == '__main__':
+    unittest.main()
