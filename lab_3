@@ -1,0 +1,53 @@
+from typing import Union, List
+
+
+def right_leaf(root: int) -> int:
+    """
+    Вычисляет значение правого потомка узла.
+
+    Формула: right = 2 * root - 1
+
+
+    >>> right_leaf(10)
+    19
+    """
+    return 2 * root - 1
+
+
+def left_leaf(root: int) -> int:
+    """
+    Вычисляет значение левого потомка узла.
+
+    Формула: left = 2 * root + 1
+
+
+    >>> left_leaf(10)
+    21
+    """
+    return root * 2 + 1
+
+
+def gen_bin_tree(height: int, root: int) -> Union[int, List]:
+    """
+    Рекурсивно строит бинарное дерево в виде вложенных списков.
+
+    Каждый узел представлен ввиде:
+        [значение, левое_поддерево, правое_поддерево]
+
+    Если высота = 0, то возвращается просто значение (лист).
+
+
+
+    >>> gen_bin_tree(0, 10)
+    10
+    >>> gen_bin_tree(1, 10)
+    [10, 21, 19]
+    >>> gen_bin_tree(2, 9)
+    [9, [19, 39, 37], [17, 35, 33]]
+    """
+    if height == 0:
+        return root
+    return [root,
+            gen_bin_tree(height - 1, left_leaf(root)),
+            gen_bin_tree(height - 1, right_leaf(root))]
+
