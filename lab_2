@@ -1,0 +1,55 @@
+from typing import List, Optional, Tuple
+
+
+def guess_num(num: int, values: List[int]) -> Tuple[Optional[int], int]:
+    """
+
+        num (int): Искомое число.
+        values (List[int])
+
+    Returns:
+        Tuple[Optional[int], int]
+
+    Examples:
+        >>> guess_num(5, [1, 3, 5, 7, 9])
+        (5, 1)
+
+        >>> guess_num(4, [1, 3, 5, 7, 9])
+        (None, 3)
+
+        >>> guess_num(42, [42])
+        (42, 1)
+
+        >>> guess_num(10, [])
+        (None, 0)
+    """
+    low = 0
+    high = len(values) - 1
+    steps = 0
+
+    while low <= high:
+        steps += 1
+        mid = (low + high) // 2
+        guess = values[mid]
+
+        if guess == num:
+            return guess, steps
+        elif guess > num:
+            high = mid - 1
+        else:
+            low = mid + 1
+
+    return None, steps
+
+
+if __name__ == "__main__":
+    num = int(input("Введите загаданное число: "))
+    low = int(input("Введите нижнюю границу: "))
+    high = int(input("Введите верхнюю границу: "))
+    values = list(range(low, high + 1))  # верхния граница включительно
+
+    result, steps = guess_num(num, values)
+    if result is not None:
+        print(f"Число найдено: {result} (за {steps} шагов)")
+    else:
+        print(f"Число не найдено (проверено {steps} шагов)")
