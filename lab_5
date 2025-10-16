@@ -59,4 +59,7 @@ def gen_bin_tree(
 
     return tree
 
-tree = gen_bin_tree(
+
+tree = gen_bin_tree(3, 9)
+print(tree)
+
