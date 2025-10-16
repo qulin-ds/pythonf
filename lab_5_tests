@@ -1,0 +1,33 @@
+import unittest
+
+from lab_5 import gen_bin_tree
+
+class TestGenBinTree(unittest.TestCase):
+    def test_basic_tree(self):
+
+        tree = gen_bin_tree(3, 9)
+        expected = [
+            9,
+            [19, [39, [], []], [37, [], []]],
+            [17, [35, [], []], [33, [], []]]
+        ]
+        self.assertEqual(tree, expected)
+
+    def test_height_one(self):
+        tree = gen_bin_tree(1, 7)
+        expected = [7, [], []]
+        self.assertEqual(tree, expected)
+
+    def test_height_zero(self):
+        tree = gen_bin_tree(0, 9)
+        expected = []
+        self.assertEqual(tree, expected)
+
+    def test_different_root(self):
+        tree = gen_bin_tree(2, 3)
+        expected_root = 3
+        self.assertEqual(tree[0], expected_root)
+
+
+if __name__ == "__main__":
+    unittest.main()
