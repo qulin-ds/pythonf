@@ -1,0 +1,129 @@
+import timeit
+import matplotlib.pyplot as plt
+from typing import Callable, List
+
+#Рекурсивная версия дерева
+def build_tree_recursive(
+    height: int,
+    root: int,
+    left_branch: Callable[[int], int] = lambda x: x * 2 + 1,
+    right_branch: Callable[[int], int] = lambda x: 2 * x - 1
+) -> List:
+    """
+    Рекурсивное построение бинарного дерева.
+
+    Каждый узел представлен в виде списка:
+    [значение, левый_потомок, правый_потомок].
+    Пустые ветви обозначаются пустым списком [].
+
+    :param height: высота дерева (количество уровней)
+    :param root: значение корня дерева
+    :param left_branch: функция для вычисления левого потомка
+    :param right_branch: функция для вычисления правого потомка
+    """
+    if height <= 0:
+        return []
+    return [
+        root,
+        build_tree_recursive(height - 1, left_branch(root), left_branch, right_branch),
+        build_tree_recursive(height - 1, right_branch(root), left_branch, right_branch)
+    ]
+
+
+#Итеративная версия дерева
+def build_tree_iterative(
+    height: int,
+    root: int,
+    left_branch: Callable[[int], int] = lambda x: x * 2 + 1,
+    right_branch: Callable[[int], int] = lambda x: 2 * x - 1
+) -> List:
+    """
+    Итеративное построение бинарного дерева через цикл.
+
+    Каждый узел представлен в виде списка:
+    [значение, левый_потомок, правый_потомок].
+    Пустые ветви обозначаются пустым списком [].
+
+    :param height: высота дерева
+    :param root: значение корня дерева
+    :param left_branch: функция для вычисления левого потомка
+    :param right_branch: функция для вычисления правого потомка
+    """
+    if height < 1:
+        return []
+
+    tree = [root, [], []]
+    current_level = [tree]
+    level = 1
+
+    while level < height:
+        next_level = []
+        for node in current_level:
+            left_value = left_branch(node[0])
+            right_value = right_branch(node[0])
+
+            left_node = [left_value, [], []]
+            right_node = [right_value, [], []]
+
+            node[1] = left_node
+            node[2] = right_node
+
+            next_level.append(left_node)
+            next_level.append(right_node)
+
+        current_level = next_level
+        level += 1
+
+    return tree
+
+
+#Функция для бенчмарка
+def benchmark(func: Callable, heights: List[int], root: int = 9, number: int = 10, repeat: int = 3) -> List[float]:
+    """
+    Замеряет время выполнения функции построения дерева для разных высот.
+
+    :param func: функция построения дерева (рекурсивная или итеративная)
+    :param heights: список высот деревьев для тестирования
+    :param root: значение корня дерева
+    :param number: количество повторов одной функции в одном замере
+    :param repeat: количество повторов для усреднения времени
+    """
+    results = []
+    for h in heights:
+        times = timeit.repeat(lambda: func(h, root), number=number, repeat=repeat)
+        results.append(min(times))
+    return results
+
+
+def main():
+    """
+    Основная функция:
+    - задаёт параметры дерева (root=9, высоты 1..6)
+    - измеряет время построения рекурсивного и итеративного дерева
+    - выводит результаты в консоль
+    - строит график времени построения
+    """
+    ROOT = 9
+    HEIGHTS = list(range(1, 7))  # высоты деревьев от 1 до 6
+
+    # Засекаем время
+    recursive_times = benchmark(build_tree_recursive, HEIGHTS, root=ROOT)
+    iterative_times = benchmark(build_tree_iterative, HEIGHTS, root=ROOT)
+
+    # Выводим результаты
+    for h, r, i in zip(HEIGHTS, recursive_times, iterative_times):
+        print(f"Высота {h}: рекурсивно = {r:.6f}s, итеративно = {i:.6f}s")
+
+    # Строим график
+    plt.plot(HEIGHTS, recursive_times, label="Рекурсивная")
+    plt.plot(HEIGHTS, iterative_times, label="Итеративная")
+    plt.xlabel("Высота дерева")
+    plt.ylabel("Время построения (сек)")
+    plt.title("Сравнение рекурсивного и итеративного построения дерева")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()
