@@ -1,0 +1,1 @@
+from .currencies_api import get_currencies

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>{{ app_name }} | Главная</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+<div class="container">
+    <h1 class="mb-3">{{ app_name }}</h1>
+    <p>Версия: <strong>{{ app_version }}</strong></p>
+    <p>Автор: <strong>{{ author_name }}</strong> (группа {{ group }})</p>
+
+    <h4 class="mt-4">Навигация</h4>
+    <ul>
+        <li><a href="/">Главная</a></li>
+        <li><a href="/author">Автор</a></li>
+        <li><a href="/users">Пользователи</a></li>
+        <li><a href="/currencies">Валюты</a></li>
+    </ul>
+</div>
+</body>
+</html>
