@@ -1,0 +1,133 @@
+import unittest
+import io
+import logging
+from unittest import mock
+
+import requests
+
+from lab_7 import get_currencies, logger
+
+
+MAX_R_VALUE = 1000.0
+
+
+class TestGetCurrencies(unittest.TestCase):
+    def test_currency_usd_real_api(self):
+        """Проверяет корректный возврат реального курса USD (нужен интернет)."""
+        data = get_currencies(["USD"])
+        self.assertIn("USD", data)
+        self.assertIsInstance(data["USD"], float)
+        self.assertGreaterEqual(data["USD"], 0)
+        self.assertLessEqual(data["USD"], MAX_R_VALUE)
+
+    def test_nonexistent_currency_raises_keyerror(self):
+        """Несуществующая валюта должна приводить к KeyError."""
+        with self.assertRaises(KeyError):
+            get_currencies(["XYZ"])
+
+    def test_connection_error(self):
+        """Искусственно эмулируем недоступное API."""
+        with mock.patch(
+            "requests.get",
+            side_effect=requests.exceptions.RequestException("fail")
+        ):
+            with self.assertRaises(ConnectionError):
+                get_currencies(["USD"])
+
+    def test_invalid_json_raises_valueerror(self):
+        """Некорректный JSON -> ValueError."""
+        fake_response = mock.Mock()
+        fake_response.raise_for_status.return_value = None
+        fake_response.json.side_effect = ValueError("bad json")
+
+        with mock.patch("requests.get", return_value=fake_response):
+            with self.assertRaises(ValueError):
+                get_currencies(["USD"])
+
+    def test_missing_valute_key_raises_keyerror(self):
+        """Нет ключа 'Valute' -> KeyError."""
+        fake_response = mock.Mock()
+        fake_response.raise_for_status.return_value = None
+        fake_response.json.return_value = {"SomethingElse": {}}
+
+        with mock.patch("requests.get", return_value=fake_response):
+            with self.assertRaises(KeyError):
+                get_currencies(["USD"])
+
+    def test_wrong_rate_type_raises_typeerror(self):
+        """Неверный тип курса -> TypeError."""
+        fake_response = mock.Mock()
+        fake_response.raise_for_status.return_value = None
+        fake_response.json.return_value = {
+            "Valute": {
+                "USD": {"Value": "not-a-number"},
+            }
+        }
+
+        with mock.patch("requests.get", return_value=fake_response):
+            with self.assertRaises(TypeError):
+                get_currencies(["USD"])
+
+
+class TestLoggerDecorator(unittest.TestCase):
+    def setUp(self):
+        self.stream = io.StringIO()
+
+        @logger(handle=self.stream)
+        def test_function(x):
+            return x * 2
+
+        @logger(handle=self.stream)
+        def failing_function():
+            raise RuntimeError("boom")
+
+        self.test_function = test_function
+        self.failing_function = failing_function
+
+    def test_logging_success(self):
+        """Логи при успешном выполнении: старт и окончание с результатом."""
+        result = self.test_function(3)
+        self.assertEqual(result, 6)
+
+        logs = self.stream.getvalue()
+        self.assertIn("INFO", logs)
+        self.assertIn("Calling test_function", logs)
+        self.assertIn("returned 6", logs)
+
+    def test_logging_error_and_reraise(self):
+        """Логи при ошибке: ERROR и проброс исключения."""
+        with self.assertRaises(RuntimeError):
+            self.failing_function()
+
+        logs = self.stream.getvalue()
+        self.assertIn("ERROR", logs)
+        self.assertIn("RuntimeError", logs)
+
+
+class TestStreamWrite(unittest.TestCase):
+    """
+    Пример теста с контекстом из задания:
+    проверяем, что при ошибке соединения пишется ERROR и ConnectionError.
+    """
+
+    def setUp(self):
+        self.stream = io.StringIO()
+
+        @logger(handle=self.stream)
+        def wrapped():
+            # некорректный URL, вызовет ConnectionError в get_currencies
+            return get_currencies(["USD"], url="https://invalid-url")
+
+        self.wrapped = wrapped
+
+    def test_logging_error(self):
+        with self.assertRaises(ConnectionError):
+            self.wrapped()
+
+        logs = self.stream.getvalue()
+        self.assertIn("ERROR", logs)
+        self.assertIn("ConnectionError", logs)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
