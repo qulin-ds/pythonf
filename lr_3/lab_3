@@ -1,6 +1,3 @@
-from typing import Union, List
-
-
 def right_leaf(root: int) -> int:
     """
     Вычисляет значение правого потомка узла.
